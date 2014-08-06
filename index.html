@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSL Validator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.11.0.js"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <a class="brand" href="#">CSL Style and Locale Validator</a>
+        </div>
+    </div>
+    <form>
+       <fieldset>
+          <legend>Validator Input</legend>
+          <p>
+             <label>CSL Schema Version</label>
+             <select id="schema-version">
+               <option value="1.0.1">1.0.1</option>
+               <option value="1.0">1.0</option>
+               <option value="0.8.1">0.8.1 (styles only)</option>
+             </select>
+          </p>
+          <p>
+             <label>CSL Style/Locale</label>
+             <select id="source-method">
+               <option value="url">Address</option>
+               <option value="textarea">Text Field</option>
+               <option value="file-upload">File Upload</option>
+             </select>
+          </p>
+       </fieldset>
+    </form>
+    <div id="results"></div>
+    <script type="text/javascript">
+
+var params = "https://raw.githubusercontent.com/citation-style-language/styles/master/dependent/nature-biotechnology.csl";
+var schemaURL = "https://github.com/citation-style-language/schema/raw/v1.0/csl.rnc"
+
+$.get( "http://validator.nu/", { doc:params, schema:schemaURL, parser:"xml", laxtype:"yes", level:"error", out:"json", showsource:"yes" } )
+.done(function( data ) {
+$( "#results" ).text( JSON.stringify(data) );
+});
+
+ $("#source-method").change(function () {
+        var end = this.value;
+        var firstDropVal = $('#schema-version').val();
+    });
+    </script>
+</body>
+</html>
