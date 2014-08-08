@@ -46,7 +46,7 @@
         </div>
     </form>
     <hr/>
-    <div id="results"></div>
+    <div><ol id="results"></ol></div>
     <div>
         <pre class="line-numbers"><code id="source-code" class="language-markup"></code></pre>
     </div>
@@ -58,8 +58,21 @@
     $.get( "http://validator.nu/", { doc:params, schema:schemaURL, parser:"xml", laxtype:"yes", level:"error", out:"json", showsource:"yes" } )
     .done(function( data ) {
         //$( "#results" ).text( JSON.stringify(data) );
+
+        var messages = data["messages"]
+        for (var i = 0; i < messages.length; i++) {
+            if (messages[i]["type"] == "error") {
+                var results = "";
+                results += '<li><b>Error</b>: ' + messages[i]["message"];
+                results += '<pre><code id="error-' + i + '" class="language-markup">' + '</code></pre>';
+                results += "</li>";
+                $( "#results" ).append(results);
+                $( "#error-" + i ).text( messages[i]["extract"] );
+            }
+        }
+
         $( "#source-code" ).text( data["source"]["code"] );
-        Prism.highlightAll($('#source-code'));
+        Prism.highlightAll();
     });
 
     $("#source-method").change(function () {
@@ -76,9 +89,9 @@
             case "textarea":
                 inputField = '<textarea id="source-text" class="form-control source-input" rows="3"></textarea>';
                 break;
-        }
-        $(".source-input").replaceWith( inputField );
-    });
+            }
+            $(".source-input").replaceWith( inputField );
+            });
     </script>
 </body>
 </html>
