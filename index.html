@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.11.0.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link href="libraries/prism.css" rel="stylesheet" />
+    <script src="libraries/prism.js"></script>
 </head>
 <body>
     <div class="navbar navbar-default" role="navigation">
@@ -17,8 +19,8 @@
         </div>
     </div>
     <form class="form-horizontal" role="form">
-        <div class="form-group">
-            <label for="schema-version" class="col-sm-2 control-label">Schema version</label>
+        <div class="form-group" title="The version of the CSL schema to validate against.">
+            <label for="schema-version" class="col-sm-2 control-label">CSL schema version</label>
             <div class="col-sm-9">
                 <select id="schema-version" class="form-control" style="width:auto">
                     <option value="1.0.1">1.0.1</option>
@@ -27,7 +29,7 @@
                 </select>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" title="The CSL document to validate.">
             <div class="col-sm-2">
                 <select id="source-method" class="form-control pull-right" style="width:auto">
                     <option value="url">Address</option>
@@ -39,8 +41,15 @@
                 <input id="source-url" class="form-control source-input">
             </div>
         </div>
+        <div class="form-group">
+            <div class="col-sm-9 col-sm-offset-2"><button type="button" class="btn btn-primary">Validate</button></div>
+        </div>
     </form>
+    <hr/>
     <div id="results"></div>
+    <div>
+        <pre class="line-numbers"><code id="source-code" class="language-markup"></code></pre>
+    </div>
     <script type="text/javascript">
 
     var params = "https://raw.githubusercontent.com/citation-style-language/styles/master/dependent/nature-biotechnology.csl";
@@ -48,7 +57,9 @@
 
     $.get( "http://validator.nu/", { doc:params, schema:schemaURL, parser:"xml", laxtype:"yes", level:"error", out:"json", showsource:"yes" } )
     .done(function( data ) {
-        $( "#results" ).text( JSON.stringify(data) );
+        //$( "#results" ).text( JSON.stringify(data) );
+        $( "#source-code" ).text( data["source"]["code"] );
+        Prism.highlightAll($('#source-code'));
     });
 
     $("#source-method").change(function () {
