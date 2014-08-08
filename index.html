@@ -36,17 +36,7 @@
                 </select>
             </div>
             <div class="col-sm-9">
-                <input id="source-url" class="form-control">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-9">
-                <input id="source-file" type="file">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-9">
-                <textarea id="source-text" class="form-control" rows="3"></textarea>
+                <input id="source-url" class="form-control source-input">
             </div>
         </div>
     </form>
@@ -62,8 +52,21 @@
     });
 
     $("#source-method").change(function () {
-        var end = this.value;
+        var sourceMethod = this.value;
         var firstDropVal = $('#schema-version').val();
+
+        switch (sourceMethod) {
+            case "url":
+                inputField = '<input id="source-url" class="form-control source-input">';
+                break;
+            case "file-upload":
+                inputField = '<input id="source-file" class="source-input" type="file">';
+                break;
+            case "textarea":
+                inputField = '<textarea id="source-text" class="form-control source-input" rows="3"></textarea>';
+                break;
+        }
+        $(".source-input").replaceWith( inputField );
     });
     </script>
 </body>
