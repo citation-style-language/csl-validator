@@ -60,7 +60,6 @@
 
         //clean up previous validation results
         $( ".inserted" ).remove();
-        $( "#source-code" ).text( "" );
 
         var schemaURL = "https://github.com/citation-style-language/schema/raw/v" + $('#schema-version').val() + "/csl.rnc";
 
@@ -101,11 +100,11 @@
             }
 
             if (!$('#source-header').length) {
-                $( "#source" ).prepend( '<h4 id="source-header">Source</h4>' );
+                $( "#source" ).prepend( '<h4 id="source-header" class="inserted">Source</h4>' );
             }
 
             if (!$('#source-code').length) {
-                $( "#source" ).append( '<pre class="line-numbers"><code id="source-code" class="language-markup"></code></pre>' );
+                $( "#source" ).append( '<pre class="inserted line-numbers"><code id="source-code" class="language-markup"></code></pre>' );
             }
 
             $( "#source-code" ).text( data["source"]["code"] );
