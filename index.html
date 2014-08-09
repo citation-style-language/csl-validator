@@ -60,17 +60,18 @@
 
         var schemaURL = "https://github.com/citation-style-language/schema/raw/v" + $('#schema-version').val() + "/csl.rnc";
         var sourceMethod = $('#source-method').val();
-        
+
         switch (sourceMethod) {
             case "url":
                 var documentURL = $('#source-url').val();
-                validateViaURL(schemaURL, documentURL)
+                validateViaURL(schemaURL, documentURL);
                 break;
             case "file-upload":
                 //
                 break;
             case "textarea":
-                //
+                var documentContent = $('#source-text').val();
+                validateViaContent(schemaURL, documentContent);
                 break;
         }
     }
@@ -88,6 +89,28 @@
             .done(function(data) {
                 parseResponse(data);
             });
+    }
+
+    function validateViaContent(schemaURL, documentContent) {
+        var formData = new FormData();
+        formData.append("schema", schemaURL);
+        formData.append("parser", "xml");
+        formData.append("laxtype", "yes");
+        formData.append("level", "error");
+        formData.append("out", "json");
+        formData.append("showsource", "yes");
+        formData.append("content", documentContent);
+
+        $.ajax({
+            type: "POST",
+            url: "http://validator.nu/",
+            data: formData,
+            success: function(data) {
+                parseResponse(data);
+            },
+            processData: false,
+            contentType: false
+        });
     }
 
     function parseResponse(data) {
