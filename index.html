@@ -9,75 +9,170 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <link href="libraries/prism.css" rel="stylesheet" />
     <script src="libraries/prism.js"></script>
+    <style>
+    .line-highlight {
+    margin-top: 0em;
+    }
+    </style>
 </head>
 <body>
-    <div class="navbar navbar-default" role="navigation">
-        <div class="container-fluid">
+    <div class="container-fluid">
+        <div class="navbar navbar-default" role="navigation">
             <div class="navbar-header">
                 <div class="navbar-brand">CSL Style and Locale Validator</div>
+                <div class="navbar-text"><a class="active" href="http://citationstyles.org/">CitationStyles.org</a></div>
             </div>
         </div>
-    </div>
-    <form class="form-horizontal" role="form">
-        <div class="form-group" title="The version of the CSL schema to validate against.">
-            <label for="schema-version" class="col-sm-2 control-label">CSL schema version</label>
-            <div class="col-sm-9">
-                <select id="schema-version" class="form-control" style="width:auto">
-                    <option value="1.0.1">1.0.1</option>
-                    <option value="1.0">1.0</option>
-                    <option value="0.8.1">0.8.1 (styles only)</option>
-                </select>
+        <form class="form-horizontal" role="form">
+            <div class="form-group" title="The version of the CSL schema to validate against.">
+                <label for="schema-version" class="col-sm-2 control-label">CSL schema version</label>
+                <div class="col-sm-9">
+                    <select id="schema-version" class="form-control" style="width:auto">
+                        <option value="1.0.1">1.0.1</option>
+                        <option value="1.0">1.0</option>
+                        <option value="0.8.1">0.8.1 (styles only)</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="form-group" title="The CSL document to validate.">
-            <div class="col-sm-2">
-                <select id="source-method" class="form-control pull-right" style="width:auto">
-                    <option value="url">Address</option>
-                    <option value="file-upload">File Upload</option>
-                    <option value="textarea">Text Field</option>
-                </select>
+            <div class="form-group" title="The CSL document to validate.">
+                <div class="col-sm-2">
+                    <select id="source-method" class="form-control pull-right" style="width:auto">
+                        <option value="url">Address</option>
+                        <option value="file-upload">File Upload</option>
+                        <option value="textarea">Text Field</option>
+                    </select>
+                </div>
+                <div class="col-sm-9">
+                    <input id="source-url" class="form-control source-input">
+                </div>
             </div>
-            <div class="col-sm-9">
-                <input id="source-url" class="form-control source-input">
+            <div class="form-group">
+                <div class="col-sm-9 col-sm-offset-2"><button id="validate" type="button" class="btn btn-primary">Validate</button></div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-9 col-sm-offset-2"><button type="button" class="btn btn-primary">Validate</button></div>
-        </div>
-    </form>
-    <hr/>
-    <div><ol id="results"></ol></div>
-    <div>
-        <pre class="line-numbers"><code id="source-code" class="language-markup"></code></pre>
+        </form>
+        <hr/>
+        <div id="report"><ol id="results"></ol></div>
+        <hr/>
+        <div id="source"></div>
     </div>
     <script type="text/javascript">
+    $("#validate").click(validate);
 
-    var params = "https://raw.githubusercontent.com/citation-style-language/styles/master/dependent/nature-biotechnology.csl";
-    var schemaURL = "https://github.com/citation-style-language/schema/raw/v1.0/csl.rnc"
+    function validate() {
 
-    $.get( "http://validator.nu/", { doc:params, schema:schemaURL, parser:"xml", laxtype:"yes", level:"error", out:"json", showsource:"yes" } )
-    .done(function( data ) {
+        //clean up previous validation results
+        $(".inserted").remove();
+
+        var schemaURL = "https://github.com/citation-style-language/schema/raw/v" + $('#schema-version').val() + "/csl.rnc";
+        var sourceMethod = $('#source-method').val();
+
+        switch (sourceMethod) {
+            case "url":
+                var documentURL = $('#source-url').val();
+                validateViaGET(schemaURL, documentURL);
+                break;
+            case "file-upload":
+                var documentFile = $('#source-file').get(0).files[0];
+                validateViaPOST(schemaURL, documentFile, sourceMethod);
+                break;
+            case "textarea":
+                var documentContent = $('#source-text').val();
+                validateViaPOST(schemaURL, documentContent, sourceMethod);
+                break;
+        }
+    }
+
+    function validateViaGET(schemaURL, documentURL) {
+        $.get("http://validator.nu/", {
+                doc: documentURL,
+                schema: schemaURL,
+                parser: "xml",
+                laxtype: "yes",
+                level: "error",
+                out: "json",
+                showsource: "yes"
+            })
+            .done(function(data) {
+                parseResponse(data);
+            });
+    }
+
+    function validateViaPOST(schemaURL, documentContent, sourceMethod) {
+        var formData = new FormData();
+        formData.append("schema", schemaURL);
+        formData.append("parser", "xml");
+        formData.append("laxtype", "yes");
+        formData.append("level", "error");
+        formData.append("out", "json");
+        formData.append("showsource", "yes");
+
+        if (sourceMethod == "textarea") {
+            formData.append("content", documentContent);
+        } else {
+            formData.append("file", documentContent);
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "http://validator.nu/",
+            data: formData,
+            success: function(data) {
+                parseResponse(data);
+            },
+            processData: false,
+            contentType: false
+        });
+    }
+
+    function parseResponse(data) {
         //$( "#results" ).text( JSON.stringify(data) );
 
         var messages = data["messages"]
+        var errorCount = 0
         for (var i = 0; i < messages.length; i++) {
             if (messages[i]["type"] == "error") {
+                errorCount += 1
+
                 var results = "";
-                results += '<li><b>Error</b>: ' + messages[i]["message"];
+                results += '<li class="inserted"><b>Error</b>';
+
+                var range = "";
+                if (messages[i].hasOwnProperty('firstLine')) {
+                    range = messages[i]["firstLine"] + "-" + messages[i]["lastLine"];
+                    results += ' on <a href="#source-code.' + range + '">lines ' + range + '</a>: ';
+                } else {
+                    range = messages[i]["lastLine"];
+                    results += ' on <a href="#source-code.' + range + '">line ' + range + '</a>: ';
+                }
+
+                results += messages[i]["message"];
                 results += '<pre><code id="error-' + i + '" class="language-markup">' + '</code></pre>';
                 results += "</li>";
-                $( "#results" ).append(results);
-                $( "#error-" + i ).text( messages[i]["extract"] );
+                $("#results").append(results);
+                $("#error-" + i).text(messages[i]["extract"]);
             }
         }
 
-        $( "#source-code" ).text( data["source"]["code"] );
-        Prism.highlightAll();
-    });
+        if (errorCount > 0) {
+            $("#report").prepend('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
+        } else {
+            $("#report").prepend('<div class="inserted alert alert-success" role="alert">Good job! No errors found.</div>');
+        }
 
-    $("#source-method").change(function () {
+        if (!$('#source-header').length) {
+            $("#source").prepend('<h4 id="source-header" class="inserted">Source</h4>');
+        }
+
+        if (!$('#source-code').length) {
+            $("#source").append('<pre class="inserted line-numbers"><code id="source-code" class="language-markup"></code></pre>');
+        }
+
+        $("#source-code").text(data["source"]["code"]);
+        Prism.highlightAll();
+    }
+
+    $("#source-method").change(function() {
         var sourceMethod = this.value;
-        var firstDropVal = $('#schema-version').val();
 
         switch (sourceMethod) {
             case "url":
@@ -89,9 +184,9 @@
             case "textarea":
                 inputField = '<textarea id="source-text" class="form-control source-input" rows="3"></textarea>';
                 break;
-            }
-            $(".source-input").replaceWith( inputField );
-            });
+        }
+        $(".source-input").replaceWith(inputField);
+    });
     </script>
 </body>
 </html>
