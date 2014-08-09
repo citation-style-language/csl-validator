@@ -51,8 +51,6 @@
         <div id="source"></div>
     </div>
     <script type="text/javascript">
-    var params = "https://raw.githubusercontent.com/citation-style-language/styles/master/dependent/nature-biotechnology.csl";
-
     $("#validate").click(validate);
 
     function validate() {
@@ -61,9 +59,25 @@
         $(".inserted").remove();
 
         var schemaURL = "https://github.com/citation-style-language/schema/raw/v" + $('#schema-version').val() + "/csl.rnc";
+        var sourceMethod = $('#source-method').val();
+        
+        switch (sourceMethod) {
+            case "url":
+                var documentURL = $('#source-url').val();
+                validateViaURL(schemaURL, documentURL)
+                break;
+            case "file-upload":
+                //
+                break;
+            case "textarea":
+                //
+                break;
+        }
+    }
 
+    function validateViaURL(schemaURL, documentURL) {
         $.get("http://validator.nu/", {
-                doc: params,
+                doc: documentURL,
                 schema: schemaURL,
                 parser: "xml",
                 laxtype: "yes",
@@ -125,7 +139,6 @@
 
     $("#source-method").change(function() {
         var sourceMethod = this.value;
-        var firstDropVal = $('#schema-version').val();
 
         switch (sourceMethod) {
             case "url":
