@@ -51,83 +51,95 @@
         <div id="source"></div>
     </div>
     <script type="text/javascript">
-
     var params = "https://raw.githubusercontent.com/citation-style-language/styles/master/dependent/nature-biotechnology.csl";
 
-    $( "#validate" ).click(validate);
+    $("#validate").click(validate);
 
     function validate() {
 
         //clean up previous validation results
-        $( ".inserted" ).remove();
+        $(".inserted").remove();
 
         var schemaURL = "https://github.com/citation-style-language/schema/raw/v" + $('#schema-version').val() + "/csl.rnc";
 
-        $.get( "http://validator.nu/", { doc:params, schema:schemaURL, parser:"xml", laxtype:"yes", level:"error", out:"json", showsource:"yes" } )
-        .done(function( data ) {
-            //$( "#results" ).text( JSON.stringify(data) );
+        $.get("http://validator.nu/", {
+                doc: params,
+                schema: schemaURL,
+                parser: "xml",
+                laxtype: "yes",
+                level: "error",
+                out: "json",
+                showsource: "yes"
+            })
+            .done(function(data) {
+                parseResponse(data);
+            });
+    }
 
-            var messages = data["messages"]
-            var errorCount = 0
-            for (var i = 0; i < messages.length; i++) {
-                if (messages[i]["type"] == "error") {
-                    errorCount += 1
+    function parseResponse(data) {
+        //$( "#results" ).text( JSON.stringify(data) );
 
-                    var results = "";
-                    results += '<li class="inserted"><b>Error</b>';
+        var messages = data["messages"]
+        var errorCount = 0
+        for (var i = 0; i < messages.length; i++) {
+            if (messages[i]["type"] == "error") {
+                errorCount += 1
 
-                    var range = "";
-                    if (messages[i].hasOwnProperty('firstLine')) {
-                        range = messages[i]["firstLine"] + "-" + messages[i]["lastLine"];
-                        results += ' on <a href="#source-code.' + range + '">lines ' + range + '</a>: ';
-                    } else {
-                        range = messages[i]["lastLine"];
-                        results += ' on <a href="#source-code.' + range + '">line ' + range + '</a>: ';
-                    }
+                var results = "";
+                results += '<li class="inserted"><b>Error</b>';
 
-                    results += messages[i]["message"];
-                    results += '<pre><code id="error-' + i + '" class="language-markup">' + '</code></pre>';
-                    results += "</li>";
-                    $( "#results" ).append(results);
-                    $( "#error-" + i ).text( messages[i]["extract"] );
+                var range = "";
+                if (messages[i].hasOwnProperty('firstLine')) {
+                    range = messages[i]["firstLine"] + "-" + messages[i]["lastLine"];
+                    results += ' on <a href="#source-code.' + range + '">lines ' + range + '</a>: ';
+                } else {
+                    range = messages[i]["lastLine"];
+                    results += ' on <a href="#source-code.' + range + '">line ' + range + '</a>: ';
                 }
+
+                results += messages[i]["message"];
+                results += '<pre><code id="error-' + i + '" class="language-markup">' + '</code></pre>';
+                results += "</li>";
+                $("#results").append(results);
+                $("#error-" + i).text(messages[i]["extract"]);
             }
+        }
 
-            if (errorCount > 0) {
-                $( "#report" ).prepend( '<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>' );
-            } else {
-                $( "#report" ).prepend( '<div class="inserted alert alert-success" role="alert">Good job! No errors found.</div>' );
-            }
+        if (errorCount > 0) {
+            $("#report").prepend('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
+        } else {
+            $("#report").prepend('<div class="inserted alert alert-success" role="alert">Good job! No errors found.</div>');
+        }
 
-            if (!$('#source-header').length) {
-                $( "#source" ).prepend( '<h4 id="source-header" class="inserted">Source</h4>' );
-            }
+        if (!$('#source-header').length) {
+            $("#source").prepend('<h4 id="source-header" class="inserted">Source</h4>');
+        }
 
-            if (!$('#source-code').length) {
-                $( "#source" ).append( '<pre class="inserted line-numbers"><code id="source-code" class="language-markup"></code></pre>' );
-            }
+        if (!$('#source-code').length) {
+            $("#source").append('<pre class="inserted line-numbers"><code id="source-code" class="language-markup"></code></pre>');
+        }
 
-            $( "#source-code" ).text( data["source"]["code"] );
-            Prism.highlightAll();
-        });}
+        $("#source-code").text(data["source"]["code"]);
+        Prism.highlightAll();
+    }
 
-        $("#source-method").change(function () {
-            var sourceMethod = this.value;
-            var firstDropVal = $('#schema-version').val();
+    $("#source-method").change(function() {
+        var sourceMethod = this.value;
+        var firstDropVal = $('#schema-version').val();
 
-            switch (sourceMethod) {
-                case "url":
-                    inputField = '<input id="source-url" class="form-control source-input">';
-                    break;
-                    case "file-upload":
-                        inputField = '<input id="source-file" class="source-input" type="file">';
-                        break;
-                        case "textarea":
-                            inputField = '<textarea id="source-text" class="form-control source-input" rows="3"></textarea>';
-                            break;
-                        }
-                        $(".source-input").replaceWith( inputField );
-                    });
-                    </script>
-                </body>
-                </html>
+        switch (sourceMethod) {
+            case "url":
+                inputField = '<input id="source-url" class="form-control source-input">';
+                break;
+            case "file-upload":
+                inputField = '<input id="source-file" class="source-input" type="file">';
+                break;
+            case "textarea":
+                inputField = '<textarea id="source-text" class="form-control source-input" rows="3"></textarea>';
+                break;
+        }
+        $(".source-input").replaceWith(inputField);
+    });
+    </script>
+</body>
+</html>
