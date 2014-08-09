@@ -60,8 +60,12 @@
 
     function validate() {
 
+        //clean up previous validation results
+        $( ".inserted" ).remove();
+        $( "#source-code" ).text( "" );
+
         var schemaURL = "https://github.com/citation-style-language/schema/raw/v" + $('#schema-version').val() + "/csl.rnc";
-        
+
         $.get( "http://validator.nu/", { doc:params, schema:schemaURL, parser:"xml", laxtype:"yes", level:"error", out:"json", showsource:"yes" } )
         .done(function( data ) {
             //$( "#results" ).text( JSON.stringify(data) );
@@ -73,7 +77,7 @@
                     errorCount += 1
 
                     var results = "";
-                    results += '<li><b>Error</b>';
+                    results += '<li class="inserted"><b>Error</b>';
 
                     var range = "";
                     if (messages[i].hasOwnProperty('firstLine')) {
@@ -93,12 +97,15 @@
             }
 
             if (errorCount > 0) {
-                $( "#report" ).prepend( '<div class="alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>' );
+                $( "#report" ).prepend( '<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>' );
             } else {
-                $( "#report" ).prepend( '<div class="alert alert-success" role="alert">Good job! No errors found.</div>' );
+                $( "#report" ).prepend( '<div class="inserted alert alert-success" role="alert">Good job! No errors found.</div>' );
             }
 
-            $( "#source" ).prepend( "<h4>Source</h4>" );
+            if (!$('#source-header').length) {
+                $( "#source" ).prepend( '<h4 id="source-header">Source</h4>' );
+            }
+
             $( "#source-code" ).text( data["source"]["code"] );
             Prism.highlightAll();
         });}
