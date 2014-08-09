@@ -48,9 +48,7 @@
         <hr/>
         <div id="report"><ol id="results"></ol></div>
         <hr/>
-        <div id="source">
-            <pre class="line-numbers"><code id="source-code" class="language-markup"></code></pre>
-        </div>
+        <div id="source"></div>
     </div>
     <script type="text/javascript">
 
@@ -104,6 +102,10 @@
 
             if (!$('#source-header').length) {
                 $( "#source" ).prepend( '<h4 id="source-header">Source</h4>' );
+            }
+
+            if (!$('#source-code').length) {
+                $( "#source" ).append( '<pre class="line-numbers"><code id="source-code" class="language-markup"></code></pre>' );
             }
 
             $( "#source-code" ).text( data["source"]["code"] );
