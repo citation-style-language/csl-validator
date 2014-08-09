@@ -64,19 +64,20 @@
         switch (sourceMethod) {
             case "url":
                 var documentURL = $('#source-url').val();
-                validateViaURL(schemaURL, documentURL);
+                validateViaGET(schemaURL, documentURL);
                 break;
             case "file-upload":
-                //
+                var documentFile = $('#source-file').get(0).files[0];
+                validateViaPOST(schemaURL, documentFile, sourceMethod);
                 break;
             case "textarea":
                 var documentContent = $('#source-text').val();
-                validateViaContent(schemaURL, documentContent);
+                validateViaPOST(schemaURL, documentContent, sourceMethod);
                 break;
         }
     }
 
-    function validateViaURL(schemaURL, documentURL) {
+    function validateViaGET(schemaURL, documentURL) {
         $.get("http://validator.nu/", {
                 doc: documentURL,
                 schema: schemaURL,
@@ -91,7 +92,7 @@
             });
     }
 
-    function validateViaContent(schemaURL, documentContent) {
+    function validateViaPOST(schemaURL, documentContent, sourceMethod) {
         var formData = new FormData();
         formData.append("schema", schemaURL);
         formData.append("parser", "xml");
@@ -99,7 +100,12 @@
         formData.append("level", "error");
         formData.append("out", "json");
         formData.append("showsource", "yes");
-        formData.append("content", documentContent);
+
+        if (sourceMethod == "textarea") {
+            formData.append("content", documentContent);
+        } else {
+            formData.append("file", documentContent);
+        }
 
         $.ajax({
             type: "POST",
