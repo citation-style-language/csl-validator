@@ -11,44 +11,44 @@
     <script src="libraries/prism.js"></script>
 </head>
 <body>
-    <div class="navbar navbar-default" role="navigation">
-        <div class="container-fluid">
+    <div class="container-fluid">
+        <div class="navbar navbar-default" role="navigation">
             <div class="navbar-header">
                 <div class="navbar-brand">CSL Style and Locale Validator</div>
             </div>
         </div>
-    </div>
-    <form class="form-horizontal" role="form">
-        <div class="form-group" title="The version of the CSL schema to validate against.">
-            <label for="schema-version" class="col-sm-2 control-label">CSL schema version</label>
-            <div class="col-sm-9">
-                <select id="schema-version" class="form-control" style="width:auto">
-                    <option value="1.0.1">1.0.1</option>
-                    <option value="1.0">1.0</option>
-                    <option value="0.8.1">0.8.1 (styles only)</option>
-                </select>
+        <form class="form-horizontal" role="form">
+            <div class="form-group" title="The version of the CSL schema to validate against.">
+                <label for="schema-version" class="col-sm-2 control-label">CSL schema version</label>
+                <div class="col-sm-9">
+                    <select id="schema-version" class="form-control" style="width:auto">
+                        <option value="1.0.1">1.0.1</option>
+                        <option value="1.0">1.0</option>
+                        <option value="0.8.1">0.8.1 (styles only)</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="form-group" title="The CSL document to validate.">
-            <div class="col-sm-2">
-                <select id="source-method" class="form-control pull-right" style="width:auto">
-                    <option value="url">Address</option>
-                    <option value="file-upload">File Upload</option>
-                    <option value="textarea">Text Field</option>
-                </select>
+            <div class="form-group" title="The CSL document to validate.">
+                <div class="col-sm-2">
+                    <select id="source-method" class="form-control pull-right" style="width:auto">
+                        <option value="url">Address</option>
+                        <option value="file-upload">File Upload</option>
+                        <option value="textarea">Text Field</option>
+                    </select>
+                </div>
+                <div class="col-sm-9">
+                    <input id="source-url" class="form-control source-input">
+                </div>
             </div>
-            <div class="col-sm-9">
-                <input id="source-url" class="form-control source-input">
+            <div class="form-group">
+                <div class="col-sm-9 col-sm-offset-2"><button type="button" class="btn btn-primary">Validate</button></div>
             </div>
+        </form>
+        <hr/>
+        <div><ol id="results"></ol></div>
+        <div>
+            <pre class="line-numbers"><code id="source-code" class="language-markup"></code></pre>
         </div>
-        <div class="form-group">
-            <div class="col-sm-9 col-sm-offset-2"><button type="button" class="btn btn-primary">Validate</button></div>
-        </div>
-    </form>
-    <hr/>
-    <div><ol id="results"></ol></div>
-    <div>
-        <pre class="line-numbers"><code id="source-code" class="language-markup"></code></pre>
     </div>
     <script type="text/javascript">
 
@@ -63,7 +63,18 @@
         for (var i = 0; i < messages.length; i++) {
             if (messages[i]["type"] == "error") {
                 var results = "";
-                results += '<li><b>Error</b>: ' + messages[i]["message"];
+                results += '<li><b>Error</b>';
+
+                var range = "";
+                if (messages[i].hasOwnProperty('firstLine')) {
+                    range = messages[i]["firstLine"] + "-" + messages[i]["lastLine"];
+                    results += ' on <a href="#source-code.' + range + '">lines ' + range + '</a>: ';
+                } else {
+                    range = messages[i]["lastLine"];
+                    results += ' on <a href="#source-code.' + range + '">line ' + range + '</a>: ';
+                }
+
+                results += messages[i]["message"];
                 results += '<pre><code id="error-' + i + '" class="language-markup">' + '</code></pre>';
                 results += "</li>";
                 $( "#results" ).append(results);
@@ -83,15 +94,15 @@
             case "url":
                 inputField = '<input id="source-url" class="form-control source-input">';
                 break;
-            case "file-upload":
-                inputField = '<input id="source-file" class="source-input" type="file">';
-                break;
-            case "textarea":
-                inputField = '<textarea id="source-text" class="form-control source-input" rows="3"></textarea>';
-                break;
-            }
-            $(".source-input").replaceWith( inputField );
-            });
-    </script>
-</body>
-</html>
+                case "file-upload":
+                    inputField = '<input id="source-file" class="source-input" type="file">';
+                    break;
+                    case "textarea":
+                        inputField = '<textarea id="source-text" class="form-control source-input" rows="3"></textarea>';
+                        break;
+                    }
+                    $(".source-input").replaceWith( inputField );
+                });
+                </script>
+            </body>
+            </html>
