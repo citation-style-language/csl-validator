@@ -55,11 +55,13 @@
     <script type="text/javascript">
 
     var params = "https://raw.githubusercontent.com/citation-style-language/styles/master/dependent/nature-biotechnology.csl";
-    var schemaURL = "https://github.com/citation-style-language/schema/raw/v1.0/csl.rnc"
 
     $( "#validate" ).click(validate);
-    
+
     function validate() {
+
+        var schemaURL = "https://github.com/citation-style-language/schema/raw/v" + $('#schema-version').val() + "/csl.rnc";
+        
         $.get( "http://validator.nu/", { doc:params, schema:schemaURL, parser:"xml", laxtype:"yes", level:"error", out:"json", showsource:"yes" } )
         .done(function( data ) {
             //$( "#results" ).text( JSON.stringify(data) );
