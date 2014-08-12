@@ -63,7 +63,9 @@
         //clean up previous validation results
         $(".inserted").remove();
 
-        var schemaURL = "https://github.com/citation-style-language/schema/raw/v" + $('#schema-version').val() + "/csl.rnc";
+        var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + $('#schema-version').val() + "/csl.rnc";
+        schemaURL += " " + "https://raw.githubusercontent.com/citation-style-language/schema/master/csl.sch";
+
         var sourceMethod = $('#source-method').val();
 
         switch (sourceMethod) {
@@ -182,7 +184,7 @@
                 inputField = '<input id="source-file" class="source-input" type="file">';
                 break;
             case "textarea":
-                inputField = '<textarea id="source-text" class="form-control source-input" rows="3"></textarea>';
+                inputField = '<textarea id="source-text" class="form-control source-input" rows="15"></textarea>';
                 break;
         }
         $(".source-input").replaceWith(inputField);
