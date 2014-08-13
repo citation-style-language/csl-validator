@@ -155,10 +155,12 @@
             }
         }
 
-        if (errorCount > 0) {
-            $("#report").prepend('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
-        } else {
+        if (errorCount == 0) {
             $("#report").prepend('<div class="inserted alert alert-success" role="alert">Good job! No errors found.</div>');
+        } else if (errorCount == 1) {
+            $("#report").prepend('<div class="inserted alert alert-danger" role="alert">Oops, I found 1 error.</div>');
+        } else {
+            $("#report").prepend('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
         }
 
         if (!$('#source-header').length) {
