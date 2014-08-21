@@ -7,13 +7,12 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.11.0.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <link href="libraries/prism.css" rel="stylesheet" />
-    <script src="libraries/prism.js"></script>
-    <style>
-    .line-highlight {
-    margin-top: 0em;
-    }
-    </style>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
+    <style type="text/css" media="screen">
+        #source-code {
+            height: 400px;
+        }
+</style>
 </head>
 <body>
     <div class="container-fluid">
@@ -52,8 +51,7 @@
         </form>
         <hr/>
         <div id="report"><ol id="results"></ol></div>
-        <hr/>
-        <div id="source"></div>
+        <div id="source" class="panel panel-default"/>
     </div>
     <script type="text/javascript">
     $("#validate").click(validate);
@@ -139,19 +137,38 @@
                 results += '<li class="inserted"><b>Error</b>';
 
                 var range = "";
+                var firstLine = "";
+                var lastLine = messages[i]["lastLine"];
                 if (messages[i].hasOwnProperty('firstLine')) {
-                    range = messages[i]["firstLine"] + "-" + messages[i]["lastLine"];
-                    results += ' on <a href="#source-code.' + range + '">lines ' + range + '</a>: ';
+                    firstLine = messages[i]["firstLine"];
+                    range = firstLine + "-" + lastLine;
+                    results += ' on <a href="#source-code" onclick="moveToLine(' + firstLine + ');">lines ' + range + '</a>: ';
                 } else {
-                    range = messages[i]["lastLine"];
-                    results += ' on <a href="#source-code.' + range + '">line ' + range + '</a>: ';
+                    results += ' on <a href="#source-code" onclick="moveToLine(' + lastLine + ');">line ' + lastLine + '</a>: ';
                 }
 
                 results += messages[i]["message"];
-                results += '<pre><code id="error-' + i + '" class="language-markup">' + '</code></pre>';
+                results += '<div id="error-' + errorCount + '"/>';
                 results += "</li>";
                 $("#results").append(results);
-                $("#error-" + i).text(messages[i]["extract"]);
+                $("#error-" + errorCount).text(messages[i]["extract"]);
+
+                var errorDiv = ace.edit("error-" + errorCount);
+                errorDiv.setReadOnly(true);
+                errorDiv.getSession().setUseWrapMode(true);
+                errorDiv.renderer.setShowGutter(false);
+                errorDiv.setHighlightActiveLine(false);
+                errorDiv.renderer.$cursorLayer.element.style.opacity=0
+                errorDiv.setTheme("ace/theme/kuroir");
+                errorDiv.getSession().setMode("ace/mode/xml");
+
+                var newHeight =
+                  errorDiv.getSession().getScreenLength()
+                  * errorDiv.renderer.lineHeight
+                  + errorDiv.renderer.scrollBar.getWidth();
+
+                $("#error-" + errorCount).height(newHeight.toString() + "px");
+                errorDiv.resize();
             }
         }
 
@@ -163,16 +180,23 @@
             $("#report").prepend('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
         }
 
-        if (!$('#source-header').length) {
-            $("#source").prepend('<h4 id="source-header" class="inserted">Source</h4>');
-        }
-
         if (!$('#source-code').length) {
-            $("#source").append('<pre class="inserted line-numbers"><code id="source-code" class="language-markup"></code></pre>');
+            $("#source").append('<div class="panel-heading inserted"><h4 class="panel-title">Source</h4></div>');
+            $("#source").append('<div id="source-code" class="panel-body inserted"></div>');
         }
 
         $("#source-code").text(data["source"]["code"]);
-        Prism.highlightAll();
+
+        window.editor = ace.edit("source-code");
+        editor.setReadOnly(true);
+        editor.getSession().setUseWrapMode(true);
+        editor.setTheme("ace/theme/eclipse");
+        editor.getSession().setMode("ace/mode/xml");
+    }
+
+    function moveToLine(line) {
+        editor.scrollToLine(line, true, true, function () {});
+        editor.gotoLine(line);
     }
 
     $("#source-method").change(function() {
