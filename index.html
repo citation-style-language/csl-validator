@@ -50,16 +50,26 @@
             </div>
         </form>
         <hr/>
-        <div id="report"><ol id="results"></ol></div>
-        <div id="source" class="panel panel-default"/>
+        <div id="alert"></div>
+        <div id="errors"><ol id="error-list"></ol></div>
+        <div id="source"></div>
     </div>
     <script type="text/javascript">
+    //required for highlighting in ace editor
+    var Range = ace.require("ace/range").Range
+
+    //keep track of source code highlighting, so we can remove prior highlighting
+    //when selecting a different error
+    var marker;
+
     $("#validate").click(validate);
 
     function validate() {
 
         //clean up previous validation results
         $(".inserted").remove();
+        $("#errors").removeAttr("class");
+        $("#source").removeAttr("class");
 
         var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + $('#schema-version').val() + "/csl.rnc";
         schemaURL += " " + "https://raw.githubusercontent.com/citation-style-language/schema/master/csl.sch";
@@ -134,23 +144,29 @@
                 errorCount += 1
 
                 var results = "";
-                results += '<li class="inserted"><b>Error</b>';
+                results += '<li class="inserted">';
 
                 var range = "";
                 var firstLine = "";
+                var lineText = "";
                 var lastLine = messages[i]["lastLine"];
+                var firstColumn = messages[i]["firstColumn"];
+                var lastColumn = messages[i]["lastColumn"];
                 if (messages[i].hasOwnProperty('firstLine')) {
                     firstLine = messages[i]["firstLine"];
                     range = firstLine + "-" + lastLine;
-                    results += ' on <a href="#source-code" onclick="moveToLine(' + firstLine + ');">lines ' + range + '</a>: ';
+                    lineText = "Lines " + range;
                 } else {
-                    results += ' on <a href="#source-code" onclick="moveToLine(' + lastLine + ');">line ' + lastLine + '</a>: ';
+                    firstLine = lastLine;
+                    lineText = "Line " + lastLine;
                 }
+                sourceHighlightRange = firstLine + ',' + firstColumn + ',' + lastLine + ',' + lastColumn;
+                results += '<a href="#source-code" onclick="moveToLine(' + sourceHighlightRange + ');">' + lineText + '</a>: ';
 
                 results += messages[i]["message"];
                 results += '<div id="error-' + errorCount + '"/>';
                 results += "</li>";
-                $("#results").append(results);
+                $("#error-list").append(results);
                 $("#error-" + errorCount).text(messages[i]["extract"]);
 
                 var errorDiv = ace.edit("error-" + errorCount);
@@ -161,6 +177,16 @@
                 errorDiv.renderer.$cursorLayer.element.style.opacity=0
                 errorDiv.setTheme("ace/theme/kuroir");
                 errorDiv.getSession().setMode("ace/mode/xml");
+
+                lineDifference = lastLine - firstLine;
+                if (firstLine == 1) {
+                    firstLine = firstLine - 1;
+                } else {
+                    firstLine = 1;
+                }
+                lastLine = firstLine + lineDifference;
+                errorHighlightRange = new Range(firstLine, firstColumn-1, lastLine, lastColumn);
+                errorDiv.session.addMarker(errorHighlightRange, "ace_active-line", "text");
 
                 var newHeight =
                   errorDiv.getSession().getScreenLength()
@@ -173,11 +199,16 @@
         }
 
         if (errorCount == 0) {
-            $("#report").prepend('<div class="inserted alert alert-success" role="alert">Good job! No errors found.</div>');
+            $("#alert").append('<div class="inserted alert alert-success" role="alert">Good job! No errors found.</div>');
         } else if (errorCount == 1) {
-            $("#report").prepend('<div class="inserted alert alert-danger" role="alert">Oops, I found 1 error.</div>');
+            $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found 1 error.</div>');
         } else {
-            $("#report").prepend('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
+            $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
+        }
+
+        if (errorCount > 0) {
+            $("#errors").attr("class", "panel panel-warning");
+            $("#errors").prepend('<div class="panel-heading inserted"><h4 class="panel-title">Errors</h4></div>');
         }
 
         if (!$('#source-code').length) {
@@ -185,18 +216,25 @@
             $("#source").append('<div id="source-code" class="panel-body inserted"></div>');
         }
 
+        $("#source").attr("class", "panel panel-primary");
         $("#source-code").text(data["source"]["code"]);
 
         window.editor = ace.edit("source-code");
         editor.setReadOnly(true);
         editor.getSession().setUseWrapMode(true);
+        editor.setHighlightActiveLine(false);
+        editor.renderer.$cursorLayer.element.style.opacity=0
         editor.setTheme("ace/theme/eclipse");
         editor.getSession().setMode("ace/mode/xml");
     }
 
-    function moveToLine(line) {
-        editor.scrollToLine(line, true, true, function () {});
-        editor.gotoLine(line);
+    function moveToLine(firstLine, firstColumn, lastLine, lastColumn) {
+        editor.scrollToLine(firstLine, true, true, function () {});
+        //editor.gotoLine(firstLine);
+        //alert(firstLine + "," + firstColumn + "," + lastLine + "," + lastColumn);
+        sourceHighlightRange = new Range(firstLine-1, firstColumn-1, lastLine-1, lastColumn);
+        editor.session.removeMarker(marker);
+        marker = editor.session.addMarker(sourceHighlightRange, "ace_active-line", "text");
     }
 
     $("#source-method").change(function() {
