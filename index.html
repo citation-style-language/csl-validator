@@ -50,8 +50,9 @@
             </div>
         </form>
         <hr/>
-        <div id="report"><ol id="results"></ol></div>
-        <div id="source"/>
+        <div id="alert"></div>
+        <div id="errors"><ol id="error-list"></ol></div>
+        <div id="source"></div>
     </div>
     <script type="text/javascript">
     $("#validate").click(validate);
@@ -60,6 +61,7 @@
 
         //clean up previous validation results
         $(".inserted").remove();
+        $("#errors").removeAttr("class");
         $("#source").removeAttr("class");
 
         var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + $('#schema-version').val() + "/csl.rnc";
@@ -135,7 +137,7 @@
                 errorCount += 1
 
                 var results = "";
-                results += '<li class="inserted"><b>Error</b>';
+                results += '<li class="inserted">';
 
                 var range = "";
                 var firstLine = "";
@@ -143,15 +145,15 @@
                 if (messages[i].hasOwnProperty('firstLine')) {
                     firstLine = messages[i]["firstLine"];
                     range = firstLine + "-" + lastLine;
-                    results += ' on <a href="#source-code" onclick="moveToLine(' + firstLine + ');">lines ' + range + '</a>: ';
+                    results += '<a href="#source-code" onclick="moveToLine(' + firstLine + ');">Lines ' + range + '</a>: ';
                 } else {
-                    results += ' on <a href="#source-code" onclick="moveToLine(' + lastLine + ');">line ' + lastLine + '</a>: ';
+                    results += '<a href="#source-code" onclick="moveToLine(' + lastLine + ');">Line ' + lastLine + '</a>: ';
                 }
 
                 results += messages[i]["message"];
                 results += '<div id="error-' + errorCount + '"/>';
                 results += "</li>";
-                $("#results").append(results);
+                $("#error-list").append(results);
                 $("#error-" + errorCount).text(messages[i]["extract"]);
 
                 var errorDiv = ace.edit("error-" + errorCount);
@@ -174,11 +176,16 @@
         }
 
         if (errorCount == 0) {
-            $("#report").prepend('<div class="inserted alert alert-success" role="alert">Good job! No errors found.</div>');
+            $("#alert").append('<div class="inserted alert alert-success" role="alert">Good job! No errors found.</div>');
         } else if (errorCount == 1) {
-            $("#report").prepend('<div class="inserted alert alert-danger" role="alert">Oops, I found 1 error.</div>');
+            $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found 1 error.</div>');
         } else {
-            $("#report").prepend('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
+            $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
+        }
+
+        if (errorCount > 0) {
+            $("#errors").attr("class", "panel panel-warning");
+            $("#errors").prepend('<div class="panel-heading inserted"><h4 class="panel-title">Errors</h4></div>');
         }
 
         if (!$('#source-code').length) {
@@ -186,7 +193,7 @@
             $("#source").append('<div id="source-code" class="panel-body inserted"></div>');
         }
 
-        $("#source").attr("class", "panel panel-default");
+        $("#source").attr("class", "panel panel-primary");
         $("#source-code").text(data["source"]["code"]);
 
         window.editor = ace.edit("source-code");
