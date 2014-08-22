@@ -58,6 +58,10 @@
     //required for highlighting in ace editor
     var Range = ace.require("ace/range").Range
 
+    //keep track of source code highlighting, so we can remove prior highlighting
+    //when selecting a different error
+    var marker;
+
     $("#validate").click(validate);
 
     function validate() {
@@ -144,17 +148,20 @@
 
                 var range = "";
                 var firstLine = "";
+                var lineText = "";
                 var lastLine = messages[i]["lastLine"];
                 var firstColumn = messages[i]["firstColumn"];
                 var lastColumn = messages[i]["lastColumn"];
                 if (messages[i].hasOwnProperty('firstLine')) {
                     firstLine = messages[i]["firstLine"];
                     range = firstLine + "-" + lastLine;
-                    results += '<a href="#source-code" onclick="moveToLine(' + firstLine + ');">Lines ' + range + '</a>: ';
+                    lineText = "Lines " + range;
                 } else {
                     firstLine = lastLine;
-                    results += '<a href="#source-code" onclick="moveToLine(' + lastLine + ');">Line ' + lastLine + '</a>: ';
+                    lineText = "Line " + lastLine;
                 }
+                sourceHighlightRange = firstLine + ',' + firstColumn + ',' + lastLine + ',' + lastColumn;
+                results += '<a href="#source-code" onclick="moveToLine(' + sourceHighlightRange + ');">' + lineText + '</a>: ';
 
                 results += messages[i]["message"];
                 results += '<div id="error-' + errorCount + '"/>';
@@ -178,8 +185,8 @@
                     firstLine = 1;
                 }
                 lastLine = firstLine + lineDifference;
-                highlightRange = new Range(firstLine, firstColumn-1, lastLine, lastColumn);
-                errorDiv.session.addMarker(highlightRange, "ace_active-line", "text");
+                errorHighlightRange = new Range(firstLine, firstColumn-1, lastLine, lastColumn);
+                errorDiv.session.addMarker(errorHighlightRange, "ace_active-line", "text");
 
                 var newHeight =
                   errorDiv.getSession().getScreenLength()
@@ -215,13 +222,19 @@
         window.editor = ace.edit("source-code");
         editor.setReadOnly(true);
         editor.getSession().setUseWrapMode(true);
+        editor.setHighlightActiveLine(false);
+        editor.renderer.$cursorLayer.element.style.opacity=0
         editor.setTheme("ace/theme/eclipse");
         editor.getSession().setMode("ace/mode/xml");
     }
 
-    function moveToLine(line) {
-        editor.scrollToLine(line, true, true, function () {});
-        editor.gotoLine(line);
+    function moveToLine(firstLine, firstColumn, lastLine, lastColumn) {
+        editor.scrollToLine(firstLine, true, true, function () {});
+        //editor.gotoLine(firstLine);
+        //alert(firstLine + "," + firstColumn + "," + lastLine + "," + lastColumn);
+        sourceHighlightRange = new Range(firstLine-1, firstColumn-1, lastLine-1, lastColumn);
+        editor.session.removeMarker(marker);
+        marker = editor.session.addMarker(sourceHighlightRange, "ace_active-line", "text");
     }
 
     $("#source-method").change(function() {
