@@ -55,6 +55,9 @@
         <div id="source"></div>
     </div>
     <script type="text/javascript">
+    //required for highlighting in ace editor
+    var Range = ace.require("ace/range").Range
+
     $("#validate").click(validate);
 
     function validate() {
@@ -142,11 +145,14 @@
                 var range = "";
                 var firstLine = "";
                 var lastLine = messages[i]["lastLine"];
+                var firstColumn = messages[i]["firstColumn"];
+                var lastColumn = messages[i]["lastColumn"];
                 if (messages[i].hasOwnProperty('firstLine')) {
                     firstLine = messages[i]["firstLine"];
                     range = firstLine + "-" + lastLine;
                     results += '<a href="#source-code" onclick="moveToLine(' + firstLine + ');">Lines ' + range + '</a>: ';
                 } else {
+                    firstLine = lastLine;
                     results += '<a href="#source-code" onclick="moveToLine(' + lastLine + ');">Line ' + lastLine + '</a>: ';
                 }
 
@@ -164,6 +170,16 @@
                 errorDiv.renderer.$cursorLayer.element.style.opacity=0
                 errorDiv.setTheme("ace/theme/kuroir");
                 errorDiv.getSession().setMode("ace/mode/xml");
+
+                lineDifference = lastLine - firstLine;
+                if (firstLine == 1) {
+                    firstLine = firstLine - 1;
+                } else {
+                    firstLine = 1;
+                }
+                lastLine = firstLine + lineDifference;
+                highlightRange = new Range(firstLine, firstColumn-1, lastLine, lastColumn);
+                errorDiv.session.addMarker(highlightRange, "ace_active-line", "text");
 
                 var newHeight =
                   errorDiv.getSession().getScreenLength()
