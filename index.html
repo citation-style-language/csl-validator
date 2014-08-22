@@ -51,7 +51,7 @@
         </form>
         <hr/>
         <div id="report"><ol id="results"></ol></div>
-        <div id="source" class="panel panel-default"/>
+        <div id="source"/>
     </div>
     <script type="text/javascript">
     $("#validate").click(validate);
@@ -60,6 +60,7 @@
 
         //clean up previous validation results
         $(".inserted").remove();
+        $("#source").removeAttr("class");
 
         var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + $('#schema-version').val() + "/csl.rnc";
         schemaURL += " " + "https://raw.githubusercontent.com/citation-style-language/schema/master/csl.sch";
@@ -185,6 +186,7 @@
             $("#source").append('<div id="source-code" class="panel-body inserted"></div>');
         }
 
+        $("#source").attr("class", "panel panel-default");
         $("#source-code").text(data["source"]["code"]);
 
         window.editor = ace.edit("source-code");
