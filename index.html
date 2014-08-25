@@ -68,6 +68,14 @@
     var marker;
 
     $("#validate").click(validate);
+    
+    //validate when pressing Enter in URL text field
+    $('#source-url').keydown(function(event) {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            validate();
+         }
+    });
 
     function validate() {
 
