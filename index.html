@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.11.0.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="libraries/ladda-themeless.min.css">
+    <script src="libraries/spin.min.js"></script>
+    <script src="libraries/ladda.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
     <style type="text/css" media="screen">
         #source-code {
@@ -50,7 +53,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-9 col-sm-offset-2"><button id="validate" type="button" class="btn btn-primary">Validate</button></div>
+                <div class="col-sm-9 col-sm-offset-2"><button id="validate" type="button" class="btn btn-primary ladda-button" data-style="expand-left"><span class="ladda-label">Validate</span></button></div>
             </div>
         </form>
         <hr/>
@@ -67,7 +70,17 @@
     //when selecting a different error
     var marker;
 
+    var validateButton = Ladda.create( document.querySelector( '#validate' ) );
+
     $("#validate").click(validate);
+
+    //validate when pressing Enter in URL text field
+    $('#source-url').keydown(function(event) {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            validate();
+         }
+    });
 
     function validate() {
 
@@ -75,6 +88,8 @@
         $(".inserted").remove();
         $("#errors").removeAttr("class");
         $("#source").removeAttr("class");
+
+        validateButton.start();
 
         var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + $('#schema-version').val() + "/csl.rnc";
         schemaURL += " " + "https://raw.githubusercontent.com/citation-style-language/schema/master/csl.sch";
@@ -84,7 +99,14 @@
         switch (sourceMethod) {
             case "url":
                 var documentURL = $('#source-url').val();
-                validateViaGET(schemaURL, documentURL);
+
+                //don't try validation on empty string
+                if ($.trim(documentURL).length > 0) {
+                    validateViaGET(schemaURL, documentURL);
+                } else {
+                    validateButton.stop();
+                }
+
                 break;
             case "file-upload":
                 var documentFile = $('#source-file').get(0).files[0];
@@ -231,6 +253,8 @@
         editor.renderer.$cursorLayer.element.style.opacity=0
         editor.setTheme("ace/theme/eclipse");
         editor.getSession().setMode("ace/mode/xml");
+
+        validateButton.stop();
     }
 
     function moveToLine(firstLine, firstColumn, lastLine, lastColumn) {
