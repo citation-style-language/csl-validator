@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="libraries/ladda-themeless.min.css">
     <script src="libraries/spin.min.js"></script>
     <script src="libraries/ladda.min.js"></script>
+    <script src="libraries/qurl.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
     <style type="text/css" media="screen">
         #source-code {
@@ -64,6 +65,9 @@
         <div id="footer"><small>Created by <a href="http://rintze.zelle.me/">Rintze M. Zelle</a>. Powered by <a href="http://validator.nu/">Validator.nu</a> and GitHub Pages. <a href="https://github.com/citation-style-language/csl-validator">Code</a> on GitHub.</small></div>
     </div>
     <script type="text/javascript">
+    //to access URL parameters
+    var url = Qurl.create();
+
     //required for highlighting in ace editor
     var Range = ace.require("ace/range").Range
 
@@ -73,6 +77,23 @@
 
     var validateButton = Ladda.create( document.querySelector( '#validate' ) );
 
+    //set schema-version if specified
+    var paramVersion = url.query('version');
+    //http://stackoverflow.com/a/2248991/1712389
+    $('#schema-version option').each(function(){
+        if (this.value == paramVersion) {
+            $("#schema-version").val(paramVersion);
+            return false;
+        }
+    });
+
+    //run validation if URL parameters includes URL
+    if (url.query('url')) {
+        $("#source-url").val(url.query('url'));
+        validate();
+    }
+
+    //validate on button click
     $("#validate").click(validate);
 
     //validate when pressing Enter in URL text field
@@ -100,6 +121,8 @@
         switch (sourceMethod) {
             case "url":
                 var documentURL = $('#source-url').val();
+                url.query('url',documentURL);
+                url.query('version',$('#schema-version').val());
 
                 //don't try validation on empty string
                 if ($.trim(documentURL).length > 0) {
@@ -110,10 +133,16 @@
 
                 break;
             case "file-upload":
+                url.query('url',false);
+                url.query('version',false);
+
                 var documentFile = $('#source-file').get(0).files[0];
                 validateViaPOST(schemaURL, documentFile, sourceMethod);
                 break;
             case "textarea":
+                url.query('url',false);
+                url.query('version',false);
+
                 var documentContent = $('#source-text').val();
                 validateViaPOST(schemaURL, documentContent, sourceMethod);
                 break;
