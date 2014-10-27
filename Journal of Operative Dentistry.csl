@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" and="symbol" et-al-min="0" demote-non-dropping-particle="sort-only" default-locale="en-US">
+  <info>
+    <title>Journal of Operative Dentistry</title>
+    <title-short>JoOD</title-short>
+    <id>http://www.zotero.org/styles/journal-of-operative-dentistry</id>
+    <link rel="self" href="http://www.zotero.org/styles/journal-of-operative-dentistry"/>
+    <author>
+      <name>Gustavo Siedschlag</name>
+      <email>odontosied@yahoo.com.br</email>
+    </author>
+    <category citation-format="numeric"/>
+    <category field="science"/>
+    <category field="dentistry"/>
+    <updated>2014-10-27T02:23:37+00:00</updated>
+  </info>
+  <macro name="title">
+    <choose>
+      <if type="bill book graphic legal_case legislation motion_picture report song" match="any">
+        <text variable="title" font-style="italic"/>
+        <text variable="publisher" prefix=" "/>
+        <text variable="publisher-place" prefix=", "/>
+      </if>
+      <else>
+        <text variable="title"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="author">
+    <names variable="author" suffix=" ">
+      <name and="symbol" delimiter-precedes-last="never" et-al-min="0" initialize="false" name-as-sort-order="all" sort-separator=" "/>
+      <et-al font-style="italic"/>
+    </names>
+  </macro>
+  <macro name="access">
+    <choose>
+      <if variable="DOI">
+        <text variable="DOI" prefix=", doi:"/>
+      </if>
+      <else-if variable="URL">
+        <text term="at"/>
+        <text variable="URL" prefix=" &lt;" suffix="&gt;"/>
+      </else-if>
+    </choose>
+  </macro>
+  <macro name="issuance">
+    <choose>
+      <if type="bill book graphic legal_case legislation motion_picture report song" match="any">
+        <group prefix="(" suffix=")">
+          <text suffix=": "/>
+          <text/>
+          <date variable="issued">
+            <date-part name="year"/>
+          </date>
+        </group>
+      </if>
+      <else>
+        <date variable="issued" prefix=" (" suffix=")">
+          <date-part name="year"/>
+        </date>
+      </else>
+    </choose>
+  </macro>
+  <citation collapse="citation-number">
+    <sort>
+      <key variable="citation-number"/>
+    </sort>
+    <layout vertical-align="sup" delimiter=",">
+      <text variable="citation-number"/>
+    </layout>
+  </citation>
+  <bibliography et-al-min="7" et-al-use-first="2" second-field-align="flush" entry-spacing="0">
+    <layout>
+      <text variable="citation-number" suffix="."/>
+      <text macro="author"/>
+      <text macro="issuance" strip-periods="false"/>
+      <text macro="title" prefix=" " suffix=". "/>
+      <text variable="container-title" font-style="italic" suffix=" "/>
+      <text variable="volume" font-weight="bold"/>
+      <text variable="issue" font-weight="bold" prefix="(" suffix=")"/>
+      <text variable="page" prefix=" "/>
+      <text macro="access"/>
+    </layout>
+  </bibliography>
+</style>
