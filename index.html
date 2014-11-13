@@ -267,7 +267,8 @@
 
         if (errorCount > 0) {
             $("#errors").attr("class", "panel panel-warning");
-            $("#errors").prepend('<div class="panel-heading inserted"><h4 class="panel-title">Errors</h4></div>');
+            $("#errors").prepend('<div class="panel-heading inserted"><h4 class="panel-title">Errors <a href="#" rel="tooltip" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="auto left" title="Click the link next to an error description to highlight the relevant lines in the Source window below"></a></h4></div>');
+            $('[data-toggle="tooltip"]').tooltip()
         }
 
         if (!$('#source-code').length) {
