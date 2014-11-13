@@ -198,8 +198,11 @@
 
         var messages = data["messages"]
         var errorCount = 0
+        var nonDocumentError = ""
         for (var i = 0; i < messages.length; i++) {
-            if (messages[i]["type"] == "error") {
+            if (messages[i]["type"] == "non-document-error") {
+                nonDocumentError = messages[i]["message"]
+            } else if (messages[i]["type"] == "error") {
                 errorCount += 1
 
                 var results = "";
@@ -257,15 +260,16 @@
             }
         }
 
-        if (errorCount == 0) {
+        if (nonDocumentError != "") {
+            $("#alert").append('<div class="inserted alert alert-warning" role="alert">Validation failed: ' + nonDocumentError + '</div>');
+        } else if (errorCount == 0) {
             $("#alert").append('<div class="inserted alert alert-success" role="alert">Good job! No errors found.</br><small>Interested in contributing your style or locale file? See our <a href="https://github.com/citation-style-language/styles/blob/master/CONTRIBUTING.md">instructions</a>.</small></div>');
-        } else if (errorCount == 1) {
-            $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found 1 error.</div>');
-        } else {
-            $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
-        }
-
-        if (errorCount > 0) {
+        } else if (errorCount > 0) {
+            if (errorCount == 1) {
+                $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found 1 error.</div>');
+            } else {
+                $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
+            }
             $("#alert > div").append('</br><small>If you have trouble understanding the error messages below, start by reading the <a href="http://citationstyles.org/downloads/specification.html">CSL specification</a>.</small>');
 
             $("#errors").attr("class", "panel panel-warning");
