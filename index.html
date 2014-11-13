@@ -277,21 +277,20 @@
             $('[data-toggle="tooltip"]').tooltip()
         }
 
-        if (!$('#source-code').length) {
+        if (data["source"]["code"].length > 0) {
             $("#source").append('<div class="panel-heading inserted"><h4 class="panel-title">Source</h4></div>');
             $("#source").append('<div id="source-code" class="panel-body inserted"></div>');
+            $("#source").attr("class", "panel panel-primary");
+            $("#source-code").text(data["source"]["code"]);
+
+            window.editor = ace.edit("source-code");
+            editor.setReadOnly(true);
+            editor.getSession().setUseWrapMode(true);
+            editor.setHighlightActiveLine(false);
+            editor.renderer.$cursorLayer.element.style.opacity=0
+            editor.setTheme("ace/theme/eclipse");
+            editor.getSession().setMode("ace/mode/xml");
         }
-
-        $("#source").attr("class", "panel panel-primary");
-        $("#source-code").text(data["source"]["code"]);
-
-        window.editor = ace.edit("source-code");
-        editor.setReadOnly(true);
-        editor.getSession().setUseWrapMode(true);
-        editor.setHighlightActiveLine(false);
-        editor.renderer.$cursorLayer.element.style.opacity=0
-        editor.setTheme("ace/theme/eclipse");
-        editor.getSession().setMode("ace/mode/xml");
 
         validateButton.stop();
     }
