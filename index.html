@@ -14,6 +14,7 @@
     <script src="libraries/spin.min.js"></script>
     <script src="libraries/ladda.min.js"></script>
     <script src="libraries/qurl.js"></script>
+    <script src="libraries/csl-validator.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
     <style type="text/css" media="screen">
         #source-code {
@@ -306,19 +307,7 @@
 
     $("#source-method").change(function() {
         var sourceMethod = this.value;
-
-        switch (sourceMethod) {
-            case "url":
-                inputField = '<input id="source-url" class="form-control source-input">';
-                break;
-            case "file-upload":
-                inputField = '<input id="source-file" class="source-input" type="file">';
-                break;
-            case "textarea":
-                inputField = '<textarea id="source-text" class="form-control source-input" rows="15"></textarea>';
-                break;
-        }
-        $(".source-input").replaceWith(inputField);
+        CSLValidator.adaptToSourceMethod(sourceMethod);
     });
     </script>
 </body>
