@@ -253,7 +253,7 @@ var CSLValidator = (function() {
             window.editor = ace.edit("source-code");
             editor.setReadOnly(true);
             editor.getSession().setUseWrapMode(true);
-            editor.setHighlightActiveLine(false);
+            editor.setHighlightActiveLine(true);
             editor.renderer.$cursorLayer.element.style.opacity = 0;
             editor.setTheme("ace/theme/eclipse");
             editor.getSession().setMode("ace/mode/xml");
@@ -264,11 +264,11 @@ var CSLValidator = (function() {
 
     function moveToLine(firstLine, firstColumn, lastLine, lastColumn) {
         editor.scrollToLine(firstLine, true, true, function() {});
-        //editor.gotoLine(firstLine);
+        editor.gotoLine(firstLine, 0, false);
         //alert(firstLine + "," + firstColumn + "," + lastLine + "," + lastColumn);
         sourceHighlightRange = new Range(firstLine - 1, firstColumn - 1, lastLine - 1, lastColumn);
         editor.session.removeMarker(marker);
-        marker = editor.session.addMarker(sourceHighlightRange, "ace_active-line", "text");
+        marker = editor.session.addMarker(sourceHighlightRange, "ace_selection", "text");
     }
 
     return {
