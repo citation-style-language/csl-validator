@@ -121,7 +121,7 @@ var CSLValidator = (function() {
     }
 
     function validateViaGET(schemaURL, documentURL) {
-        $.get("http://validator.nu/", {
+        $.get("https://validator.nu/", {
                 doc: documentURL,
                 schema: schemaURL,
                 parser: "xml",
@@ -152,7 +152,7 @@ var CSLValidator = (function() {
 
         $.ajax({
             type: "POST",
-            url: "http://validator.nu/",
+            url: "https://validator.nu/",
             data: formData,
             success: function(data) {
                 parseResponse(data);
