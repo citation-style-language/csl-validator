@@ -165,13 +165,13 @@ var CSLValidator = (function() {
     function parseResponse(data) {
         //$( "#results" ).text( JSON.stringify(data) );
 
-        var messages = data["messages"];
+        var messages = data.messages;
         var errorCount = 0;
         var nonDocumentError = "";
         for (var i = 0; i < messages.length; i++) {
-            if (messages[i]["type"] == "non-document-error") {
-                nonDocumentError = messages[i]["message"];
-            } else if (messages[i]["type"] == "error") {
+            if (messages[i].type == "non-document-error") {
+                nonDocumentError = messages[i].message;
+            } else if (messages[i].type == "error") {
                 errorCount += 1;
 
                 var results = "";
@@ -180,11 +180,11 @@ var CSLValidator = (function() {
                 var range = "";
                 var firstLine = "";
                 var lineText = "";
-                var lastLine = messages[i]["lastLine"];
-                var firstColumn = messages[i]["firstColumn"];
-                var lastColumn = messages[i]["lastColumn"];
+                var lastLine = messages[i].lastLine;
+                var firstColumn = messages[i].firstColumn;
+                var lastColumn = messages[i].lastColumn;
                 if (messages[i].hasOwnProperty('firstLine')) {
-                    firstLine = messages[i]["firstLine"];
+                    firstLine = messages[i].firstLine;
                     range = firstLine + "-" + lastLine;
                     lineText = "Lines " + range;
                 } else {
@@ -194,11 +194,11 @@ var CSLValidator = (function() {
                 sourceHighlightRange = firstLine + ',' + firstColumn + ',' + lastLine + ',' + lastColumn;
                 results += '<a href="#source-code" onclick="CSLValidator.moveToLine(' + sourceHighlightRange + ');">' + lineText + '</a>: ';
 
-                results += messages[i]["message"];
+                results += messages[i].message;
                 results += '<div id="error-' + errorCount + '"/>';
                 results += "</li>";
                 $("#error-list").append(results);
-                $("#error-" + errorCount).text(messages[i]["extract"]);
+                $("#error-" + errorCount).text(messages[i].extract);
 
                 var errorDiv = ace.edit("error-" + errorCount);
                 errorDiv.setReadOnly(true);
@@ -244,11 +244,11 @@ var CSLValidator = (function() {
             $('[data-toggle="tooltip"]').tooltip();
         }
 
-        if (data["source"]["code"].length > 0) {
+        if (data.source.code.length > 0) {
             $("#source").append('<div class="panel-heading inserted"><h4 class="panel-title">Source</h4></div>');
             $("#source").append('<div id="source-code" class="panel-body inserted"></div>');
             $("#source").attr("class", "panel panel-primary");
-            $("#source-code").text(data["source"]["code"]);
+            $("#source-code").text(data.source.code);
 
             window.editor = ace.edit("source-code");
             editor.setReadOnly(true);
