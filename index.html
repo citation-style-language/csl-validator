@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>CSL Validator</title>
     <meta charset="utf-8">
@@ -24,14 +25,16 @@
             padding-top: 5px;
             padding-bottom: 5px;
         }
-</style>
+    </style>
 </head>
+
 <body>
     <div class="container-fluid">
         <div class="navbar navbar-default" role="navigation">
             <div class="navbar-header">
                 <div class="navbar-brand">CSL Style and Locale Validator</div>
-                <div class="navbar-text"><a class="active" href="http://citationstyles.org/">CitationStyles.org</a></div>
+                <div class="navbar-text"><a class="active" href="http://citationstyles.org/">CitationStyles.org</a>
+                </div>
             </div>
         </div>
         <form class="form-horizontal" role="form">
@@ -58,19 +61,26 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-9 col-sm-offset-2"><button id="validate" type="button" class="btn btn-primary ladda-button" data-style="expand-left"><span class="ladda-label">Validate</span></button></div>
+                <div class="col-sm-9 col-sm-offset-2">
+                    <button id="validate" type="button" class="btn btn-primary ladda-button" data-style="expand-left"><span class="ladda-label">Validate</span>
+                    </button>
+                </div>
             </div>
         </form>
         <hr/>
         <div id="alert"></div>
-        <div id="errors"><ol id="error-list"></ol></div>
+        <div id="errors">
+            <ol id="error-list"></ol>
+        </div>
         <div id="source"></div>
-        <div id="footer"><small>Created by <a href="http://rintze.zelle.me/">Rintze M. Zelle</a>. Powered by <a href="http://validator.nu/">Validator.nu</a> and GitHub Pages. <a href="https://github.com/citation-style-language/csl-validator">Code</a> on GitHub.</small></div>
+        <div id="footer"><small>Created by <a href="http://rintze.zelle.me/">Rintze M. Zelle</a>. Powered by <a href="http://validator.nu/">Validator.nu</a> and GitHub Pages. <a href="https://github.com/citation-style-language/csl-validator">Code</a> on GitHub.</small>
+        </div>
     </div>
     <script type="text/javascript">
-    $().ready(function() {
-        CSLValidator.init();
-    });
+        $().ready(function() {
+            CSLValidator.init();
+        });
     </script>
 </body>
+
 </html>

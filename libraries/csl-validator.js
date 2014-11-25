@@ -21,12 +21,12 @@ var CSLValidator = (function() {
         Range = ace.require("ace/range").Range;
 
         //Initialize Ladda button
-        validateButton = Ladda.create( document.querySelector( '#validate' ) );
+        validateButton = Ladda.create(document.querySelector('#validate'));
 
         //set schema-version if specified
         var paramVersion = url.query('version');
         //http://stackoverflow.com/a/2248991/1712389
-        $('#schema-version option').each(function(){
+        $('#schema-version option').each(function() {
             if (this.value == paramVersion) {
                 $("#schema-version").val(paramVersion);
                 return false;
@@ -263,10 +263,10 @@ var CSLValidator = (function() {
     }
 
     function moveToLine(firstLine, firstColumn, lastLine, lastColumn) {
-        editor.scrollToLine(firstLine, true, true, function () {});
+        editor.scrollToLine(firstLine, true, true, function() {});
         //editor.gotoLine(firstLine);
         //alert(firstLine + "," + firstColumn + "," + lastLine + "," + lastColumn);
-        sourceHighlightRange = new Range(firstLine-1, firstColumn-1, lastLine-1, lastColumn);
+        sourceHighlightRange = new Range(firstLine - 1, firstColumn - 1, lastLine - 1, lastColumn);
         editor.session.removeMarker(marker);
         marker = editor.session.addMarker(sourceHighlightRange, "ace_active-line", "text");
     }
