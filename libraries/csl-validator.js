@@ -12,6 +12,12 @@ var CSLValidator = (function() {
 
     var validateButton;
 
+    //keep track of how much time validator.nu is taking
+    var responseTimer;
+    var responseMaxTime = 6000; //in milliseconds
+    var responseStartTime;
+    var responseEndTime;
+
     var init = function() {
 
         //Initialize Qurl
@@ -77,12 +83,12 @@ var CSLValidator = (function() {
 
     function validate() {
 
-        //clean up previous validation results
-        $(".inserted").remove();
-        $("#errors").removeAttr("class");
-        $("#source").removeAttr("class");
+        removeValidationResults();
 
         validateButton.start();
+
+        responseStartTime = new Date();
+        responseTimer = window.setTimeout(reportTimeOut, responseMaxTime);
 
         var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + $('#schema-version').val() + "/csl.rnc";
         schemaURL += " " + "https://raw.githubusercontent.com/citation-style-language/schema/master/csl.sch";
@@ -165,6 +171,12 @@ var CSLValidator = (function() {
     function parseResponse(data) {
         //$( "#results" ).text( JSON.stringify(data) );
 
+        window.clearTimeout(responseTimer);
+        responseEndTime = new Date();
+        console.log("Received response from validator.nu after " + (responseEndTime - responseStartTime) + "ms");
+
+        removeValidationResults();
+
         var messages = data.messages;
         var errorCount = 0;
         var nonDocumentError = "";
@@ -237,7 +249,7 @@ var CSLValidator = (function() {
             } else {
                 $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
             }
-            $("#alert > div").append('</br><small>If you have trouble understanding the error messages below, start by reading the <a href="http://citationstyles.org/downloads/specification.html">CSL specification</a>.</small>');
+            $("#alert > div.alert-danger").append('</br><small>If you have trouble understanding the error messages below, start by reading the <a href="http://citationstyles.org/downloads/specification.html">CSL specification</a>.</small>');
 
             $("#errors").attr("class", "panel panel-warning");
             $("#errors").prepend('<div class="panel-heading inserted"><h4 class="panel-title">Errors <a href="#" rel="tooltip" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="auto left" title="Click the link next to an error description to highlight the relevant lines in the Source window below"></a></h4></div>');
@@ -269,6 +281,19 @@ var CSLValidator = (function() {
         sourceHighlightRange = new Range(firstLine - 1, firstColumn - 1, lastLine - 1, lastColumn);
         editor.session.removeMarker(marker);
         marker = editor.session.addMarker(sourceHighlightRange, "ace_selection", "text");
+    }
+
+    function removeValidationResults() {
+        $(".inserted").remove();
+        $("#errors").removeAttr("class");
+        $("#source").removeAttr("class");
+    }
+
+    function reportTimeOut() {
+        validateButton.stop();
+        console.log("Call to validator.nu timed out after " + responseMaxTime + "ms.");
+        $("#alert").append('<div class="inserted alert alert-warning" role="alert">Validation is taking longer than expected! (more than ' + responseMaxTime/1000 + ' seconds)</div>');
+        $("#alert > div.alert-warning").append('</br><small>This typically happens if the <a href="https://validator.nu/">Validator.nu</a> website is down, but maybe you get lucky if you wait a little longer.</small>');
     }
 
     return {
