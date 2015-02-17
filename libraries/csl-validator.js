@@ -1,7 +1,7 @@
 var CSLValidator = (function() {
 
     //to access URL parameters
-    var url;
+    var uri;
 
     //required for highlighting in ace editor
     var Range;
@@ -20,8 +20,8 @@ var CSLValidator = (function() {
 
     var init = function() {
 
-        //Initialize Qurl
-        url = Qurl.create();
+        //Initialize URI.js
+        uri = new URI();
 
         //Create range for Ace editor
         Range = ace.require("ace/range").Range;
@@ -30,18 +30,22 @@ var CSLValidator = (function() {
         validateButton = Ladda.create(document.querySelector('#validate'));
 
         //set schema-version if specified
-        var paramVersion = url.query('version');
-        //http://stackoverflow.com/a/2248991/1712389
-        $('#schema-version option').each(function() {
-            if (this.value == paramVersion) {
-                $("#schema-version").val(paramVersion);
-                return false;
-            }
-        });
+        if (uri.hasQuery('version')) {
+          var setSchemaVersion = uri.query(true)['version'];
+
+          //http://stackoverflow.com/a/2248991/1712389
+          $('#schema-version option').each(function() {
+              if (this.value == setSchemaVersion) {
+                  $("#schema-version").val(setSchemaVersion);
+                  return false;
+              }
+          });
+        }
 
         //run validation if URL parameters includes URL
-        if (url.query('url')) {
-            $("#source-url").val(url.query('url'));
+        if (uri.hasQuery('url')) {
+            var setURL = uri.query(true)['url'];
+            $("#source-url").val(setURL);
             validate();
         }
 
@@ -98,8 +102,10 @@ var CSLValidator = (function() {
         switch (sourceMethod) {
             case "url":
                 var documentURL = $('#source-url').val();
-                url.query('url', documentURL);
-                url.query('version', $('#schema-version').val());
+
+                uri.setSearch("url", documentURL);
+                uri.setSearch("version", $('#schema-version').val());
+                history.pushState({}, document.title, uri);
 
                 //don't try validation on empty string
                 if ($.trim(documentURL).length > 0) {
@@ -110,15 +116,15 @@ var CSLValidator = (function() {
 
                 break;
             case "file-upload":
-                url.query('url', false);
-                url.query('version', false);
+                uri.search("");
+                history.pushState({}, document.title, uri);
 
                 var documentFile = $('#source-file').get(0).files[0];
                 validateViaPOST(schemaURL, documentFile, sourceMethod);
                 break;
             case "textarea":
-                url.query('url', false);
-                url.query('version', false);
+                uri.search("");
+                history.pushState({}, document.title, uri);
 
                 var documentContent = $('#source-text').val();
                 validateViaPOST(schemaURL, documentContent, sourceMethod);
