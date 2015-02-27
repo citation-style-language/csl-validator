@@ -133,7 +133,7 @@ var CSLValidator = (function() {
     }
 
     function validateViaGET(schemaURL, documentURL) {
-        $.get("https://validator.nu/", {
+        $.get("http://validator.w3.org/nu/", {
                 doc: documentURL,
                 schema: schemaURL,
                 parser: "xml",
@@ -164,7 +164,7 @@ var CSLValidator = (function() {
 
         $.ajax({
             type: "POST",
-            url: "https://validator.nu/",
+            url: "http://validator.w3.org/nu/",
             data: formData,
             success: function(data) {
                 parseResponse(data);
@@ -175,11 +175,11 @@ var CSLValidator = (function() {
     }
 
     function parseResponse(data) {
-        //$( "#results" ).text( JSON.stringify(data) );
+        //console.log(JSON.stringify(data));
 
         window.clearTimeout(responseTimer);
         responseEndTime = new Date();
-        console.log("Received response from validator.nu after " + (responseEndTime - responseStartTime) + "ms");
+        console.log("Received response from http://validator.w3.org/nu/ after " + (responseEndTime - responseStartTime) + "ms");
 
         removeValidationResults();
 
@@ -297,9 +297,9 @@ var CSLValidator = (function() {
 
     function reportTimeOut() {
         validateButton.stop();
-        console.log("Call to validator.nu timed out after " + responseMaxTime + "ms.");
+        console.log("Call to http://validator.w3.org/nu/ timed out after " + responseMaxTime + "ms.");
         $("#alert").append('<div class="inserted alert alert-warning" role="alert">Validation is taking longer than expected! (more than ' + responseMaxTime/1000 + ' seconds)</div>');
-        $("#alert > div.alert-warning").append('</br><small>This typically happens if the <a href="https://validator.nu/">Validator.nu</a> website is down, but maybe you get lucky if you wait a little longer.</small>');
+        $("#alert > div.alert-warning").append('</br><small>This typically happens if the <a href="http://validator.w3.org/nu/">Nu HTML Checker</a> website is down, but maybe you get lucky if you wait a little longer.</small>');
     }
 
     return {
