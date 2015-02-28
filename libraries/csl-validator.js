@@ -111,6 +111,7 @@ var CSLValidator = (function() {
                 if ($.trim(documentURL).length > 0) {
                     validateViaGET(schemaURL, documentURL);
                 } else {
+                    window.clearTimeout(responseTimer);
                     validateButton.stop();
                 }
 
