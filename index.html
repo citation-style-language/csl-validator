@@ -9,7 +9,9 @@
     <link rel="icon" type="image/png" href="favicon-32x32.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap-theme.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="libraries/jquery-ui.1.11.3.min.css">
+    <script src="libraries/jquery.1.11.3.min.js"></script>
+    <script src="libraries/jquery-ui.1.11.3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Ladda/0.9.7/ladda-themeless.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Ladda/0.9.7/spin.min.js"></script>
@@ -35,8 +37,12 @@
         ga('create', 'UA-42952194-1', 'auto');
         ga('send', 'pageview');
     </script>
+    <script>
+      $(function() {
+      $( "#tabs" ).tabs();
+      });
+    </script>
 </head>
-
 <body>
     <div class="container-fluid">
         <div class="navbar navbar-default" role="navigation">
@@ -78,8 +84,15 @@
         </form>
         <hr/>
         <div id="alert"></div>
-        <div id="errors">
+        <div id="tabs">
+          <ul>
+            <li><a id="source-tab" href="#source">Juris-M Style</a></li>
+            <li><a id="errors-tab" href="#errors">Errors</a></li>
+          </ul>
+          <div id="source"></div>
+          <div id="errors">
             <ol id="error-list"></ol>
+          </div>
         </div>
         <div id="source"></div>
         <div id="footer"><small>Created by <a href="http://rintze.zelle.me/">Rintze M. Zelle</a>. Powered by <a href="http://validator.w3.org/nu/">Nu HTML Checker</a> and GitHub Pages. <a href="https://github.com/citation-style-language/csl-validator">Code</a> on GitHub.</small>

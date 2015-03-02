@@ -87,9 +87,13 @@ var CSLValidator = (function() {
 
     function validate() {
 
+        $("#tabs").tabs("enable");
+
         removeValidationResults();
 
         validateButton.start();
+
+        $("#source-tab").click();
 
         responseStartTime = new Date();
         responseTimer = window.setTimeout(reportTimeOut, responseMaxTime);
@@ -247,10 +251,14 @@ var CSLValidator = (function() {
         }
 
         if (nonDocumentError !== "") {
+            $("#errors-tab").click();
             $("#alert").append('<div class="inserted alert alert-warning" role="alert">Validation failed: ' + nonDocumentError + '</div>');
         } else if (errorCount === 0) {
+            $("#source-tab").click();
+            $("#tabs").tabs("disable", "#errors");
             $("#alert").append('<div class="inserted alert alert-success" role="alert">Good job! No errors found.</br><small>Interested in contributing your style or locale file? See our <a href="https://github.com/citation-style-language/styles/blob/master/CONTRIBUTING.md">instructions</a>.</small></div>');
         } else if (errorCount > 0) {
+            $("#errors-tab").click();
             if (errorCount == 1) {
                 $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found 1 error.</div>');
             } else {
