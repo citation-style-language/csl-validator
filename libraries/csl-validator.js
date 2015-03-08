@@ -284,10 +284,8 @@ var CSLValidator = (function() {
     function moveToLine(firstLine, firstColumn, lastLine, lastColumn) {
         editor.scrollToLine(firstLine, true, true, function() {});
         editor.gotoLine(firstLine, 0, false);
-        //alert(firstLine + "," + firstColumn + "," + lastLine + "," + lastColumn);
         sourceHighlightRange = new Range(firstLine - 1, firstColumn - 1, lastLine - 1, lastColumn);
-        editor.session.removeMarker(marker);
-        marker = editor.session.addMarker(sourceHighlightRange, "ace_selection", "text");
+        editor.selection.setRange(sourceHighlightRange);
     }
 
     function removeValidationResults() {
