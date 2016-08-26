@@ -40,13 +40,16 @@
 <body>
     <div class="container-fluid">
         <div class="navbar navbar-default" role="navigation">
-            <div class="navbar-header">
-                <div class="navbar-brand">CSL Style and Locale Validator</div>
-                <div class="navbar-text"><a class="active" href="http://citationstyles.org/">CitationStyles.org</a>
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <div class="navbar-brand">CSL Style and Locale Validator</div>
+                    <div class="navbar-text">
+                        <a class="active" href="http://citationstyles.org/">CitationStyles.org</a>
+                    </div>
                 </div>
             </div>
         </div>
-        <form class="form-horizontal" autocomplete="off" role="form">
+        <form class="form-horizontal" autocomplete="off">
             <div class="form-group" title="The version of the CSL schema to validate against.">
                 <label for="schema-version" class="col-sm-2 control-label">CSL schema version</label>
                 <div class="col-sm-9">
@@ -66,7 +69,7 @@
                     </select>
                 </div>
                 <div class="col-sm-9">
-                    <input id="source-url" class="form-control source-input">
+                    <input id="source-url" type="url" class="form-control source-input">
                 </div>
             </div>
             <div class="form-group">

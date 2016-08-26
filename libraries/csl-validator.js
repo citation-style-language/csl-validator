@@ -72,7 +72,7 @@ var CSLValidator = (function() {
 
         switch (sourceMethod) {
             case "url":
-                inputField = '<input id="source-url" class="form-control source-input">';
+                inputField = '<input id="source-url" type="url" class="form-control source-input">';
                 break;
             case "file-upload":
                 inputField = '<input id="source-file" class="source-input" type="file">';
