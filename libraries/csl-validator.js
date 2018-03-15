@@ -134,7 +134,7 @@ var CSLValidator = (function() {
     }
 
     function validateViaGET(schemaURL, documentURL) {
-        $.get("http://validator.w3.org/nu/", {
+        $.get("https://validator.w3.org/nu/", {
                 doc: documentURL,
                 schema: schemaURL,
                 parser: "xml",
@@ -165,7 +165,7 @@ var CSLValidator = (function() {
 
         $.ajax({
             type: "POST",
-            url: "http://validator.w3.org/nu/",
+            url: "https://validator.w3.org/nu/",
             data: formData,
             success: function(data) {
                 parseResponse(data);
@@ -180,7 +180,7 @@ var CSLValidator = (function() {
 
         window.clearTimeout(responseTimer);
         responseEndTime = new Date();
-        console.log("Received response from http://validator.w3.org/nu/ after " + (responseEndTime - responseStartTime) + "ms");
+        console.log("Received response from https://validator.w3.org/nu/ after " + (responseEndTime - responseStartTime) + "ms");
 
         removeValidationResults();
 
@@ -256,7 +256,7 @@ var CSLValidator = (function() {
             } else {
                 $("#alert").append('<div class="inserted alert alert-danger" role="alert">Oops, I found ' + errorCount + ' errors.</div>');
             }
-            $("#alert > div.alert-danger").append('</br><small>If you have trouble understanding the error messages below, start by reading the <a href="http://citationstyles.org/downloads/specification.html">CSL specification</a>.</small>');
+            $("#alert > div.alert-danger").append('</br><small>If you have trouble understanding the error messages below, start by reading the <a href="http://docs.citationstyles.org/en/stable/specification.html">CSL specification</a>.</small>');
 
             $("#errors").attr("class", "panel panel-warning");
             $("#errors").prepend('<div class="panel-heading inserted"><h4 class="panel-title">Errors <a href="#" rel="tooltip" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="auto left" title="Click the link next to an error description to highlight the relevant lines in the Source window below"></a></h4></div>');
@@ -296,9 +296,9 @@ var CSLValidator = (function() {
 
     function reportTimeOut() {
         validateButton.stop();
-        console.log("Call to http://validator.w3.org/nu/ timed out after " + responseMaxTime + "ms.");
+        console.log("Call to https://validator.w3.org/nu/ timed out after " + responseMaxTime + "ms.");
         $("#alert").append('<div class="inserted alert alert-warning" role="alert">Validation is taking longer than expected! (more than ' + responseMaxTime/1000 + ' seconds)</div>');
-        $("#alert > div.alert-warning").append('</br><small>This typically happens if the <a href="http://validator.w3.org/nu/">Nu HTML Checker</a> website is down, but maybe you get lucky if you wait a little longer.</small>');
+        $("#alert > div.alert-warning").append('</br><small>This typically happens if the <a href="https://validator.w3.org/nu/">Nu HTML Checker</a> website is down, but maybe you get lucky if you wait a little longer.</small>');
     }
 
     return {
