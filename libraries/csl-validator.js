@@ -75,7 +75,7 @@ var CSLValidator = (function() {
                 inputField = '<input id="source-url" type="url" class="form-control source-input">';
                 break;
             case "file-upload":
-                inputField = '<input id="source-file" class="source-input" type="file">';
+                inputField = '<div class="container-fluid source-input" style="padding-left: 0px"><div class="row"><div class="col-auto"><div class="custom-file"><input type="file" class="custom-file-input" id="source-file"><label class="custom-file-label" for="source-file" id="fileBrowserLabel">No file selected</label></div></div></div></div>';
                 break;
             case "textarea":
                 inputField = '<textarea id="source-text" class="form-control source-input" rows="15"></textarea>';
@@ -83,6 +83,16 @@ var CSLValidator = (function() {
         }
 
         $(".source-input").replaceWith(inputField);
+        
+        function handleFileSelect(event) {
+          var browseButton = document.getElementById("fileBrowserLabel");
+          browseButton.textContent = event.target.files[0].name;
+        }
+        
+        if (sourceMethod == "file-upload") {
+          var inputElement = document.getElementById("source-file");
+          inputElement.addEventListener("change", handleFileSelect, false);
+        }
     };
 
     function validate() {
