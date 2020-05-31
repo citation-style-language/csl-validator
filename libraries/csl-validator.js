@@ -105,7 +105,7 @@ var CSLValidator = (function() {
         responseTimer = window.setTimeout(reportTimeOut, responseMaxTime);
 
         var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + $('#schema-version').val() + "/csl.rnc";
-        schemaURL += " " + "https://raw.githubusercontent.com/citation-style-language/schema/master/csl.sch";
+        schemaURL += " " + "https://raw.githubusercontent.com/citation-style-language/schema/602ad40976b7b455a3ce0b79f5534e8e75f088e9/csl.sch";
 
         var sourceMethod = $('#source-method').val();
 
