@@ -103,8 +103,18 @@ var CSLValidator = (function() {
 
         responseStartTime = new Date();
         responseTimer = window.setTimeout(reportTimeOut, responseMaxTime);
-
-        var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + $('#schema-version').val() + "/csl.rnc";
+        let version = $('#schema-version').val()
+        // the schema repository organization changed for 1.0.2.
+        // Including the repository schema for now.
+        if (version == "1.0.2_strict") {
+          var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v1.0.2/schemas/styles/csl-repository.rnc";
+        }
+        else if (version == "1.0.2") {
+          var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v1.0.2/schemas/styles/csl.rnc";
+        }
+        else {
+          var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + version + "/schemas/styles/csl.rnc";
+        }
         schemaURL += " " + "https://raw.githubusercontent.com/citation-style-language/schema/602ad40976b7b455a3ce0b79f5534e8e75f088e9/csl.sch";
 
         var sourceMethod = $('#source-method').val();
