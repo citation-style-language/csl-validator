@@ -113,7 +113,7 @@ var CSLValidator = (function() {
           var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v1.0.2/schemas/styles/csl.rnc";
         }
         else {
-          var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + version + "/schemas/styles/csl.rnc";
+          var schemaURL = "https://raw.githubusercontent.com/citation-style-language/schema/v" + version + "/csl.rnc";
         }
         schemaURL += " " + "https://raw.githubusercontent.com/citation-style-language/schema/602ad40976b7b455a3ce0b79f5534e8e75f088e9/csl.sch";
 
